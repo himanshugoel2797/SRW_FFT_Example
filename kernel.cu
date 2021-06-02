@@ -92,14 +92,14 @@ int main()
 {
     double xStart = -5;
     double xRange = 10;
-    double xNp = 10000000;
+    long xNp = 10000000;
     double xStep = xRange / (xNp - 1);
     double mesh[3] = { xStart, xStep, xNp };
     float* input_data;// = new float[2 * 10000000];
     int runs = 1000;
 
-    cudaHostAlloc(&input_data, 2 * 10000000 * sizeof(float), cudaHostAllocDefault);
-    memset(input_data, 0, sizeof(float) * 2 * 10000000);
+    cudaHostAlloc(&input_data, 2 * xNp * sizeof(float), cudaHostAllocDefault);
+    memset(input_data, 0, sizeof(float) * 2 * xNp);
 
     int x0 = (int)((-0.5 - xStart) / xStep);
     int x1 = (int)((0.5 - xStart) / xStep);
