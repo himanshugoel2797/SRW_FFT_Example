@@ -96,6 +96,7 @@ int main()
     double xStep = xRange / (xNp - 1);
     double mesh[3] = { xStart, xStep, xNp };
     float* input_data;// = new float[2 * 10000000];
+    int runs = 1000;
 
     cudaHostAlloc(&input_data, 2 * 10000000 * sizeof(float), cudaHostAllocDefault);
     memset(input_data, 0, sizeof(float) * 2 * 10000000);
@@ -112,7 +113,7 @@ int main()
 
     std::cout << "Starting benchmark " << std::endl;
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < runs; i++) {
         std::chrono::high_resolution_clock::time_point t0 = std::chrono::high_resolution_clock::now();
         srwlUtiFFT(reinterpret_cast<char*>(input_data), 'f', mesh, 3, 1);
         std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
@@ -120,7 +121,7 @@ int main()
         net_time += ts.count();
     }
 
-    net_time /= 1;
+    net_time /= runs;
     net_time *= 1000;
 
     std::cout << "Benchmark took " << net_time << " ms." << std::endl;

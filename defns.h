@@ -1,7 +1,7 @@
 #pragma once
 
-#define _FFTW3
-#define _CUFFT
+#define _FFTW3 1
+#define _CUFFT 1
 
 void RepairSignAfter2DFFT_CUDA(float* pAfterFFT, long Nx, long Ny);
 void RotateDataAfter2DFFT_CUDA(float* pAfterFFT, long Nx, long Ny);
