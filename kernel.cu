@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 int srwlUtiFFT(char *pcData, char typeData, double *arMesh, int nMesh,
@@ -84,10 +85,22 @@ int srwlUtiFFT(char *pcData, char typeData, double *arMesh, int nMesh,
   return 0;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+  int fftLen = 8;
+  if (argc < 2){
+    std::cout << "Expected FFT Length to be specified, defaulting to 8." << std::endl;
+  }else{
+    fftLen = atoi(argv[1]);
+  }
+
+
   double xStart = -5;
   double xRange = 10;
-  long xNp = 100000000;
+  long xNp = 1;
+  for (int i = 0; i < fftLen; i++)
+    xNp *= 10;
+
   double xStep = xRange / (xNp - 1);
   double mesh[3] = {xStart, xStep, xNp};
   float *input_data;

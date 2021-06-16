@@ -9,7 +9,7 @@ To compile without plan reuse:
 
 To compile with plan reuse:
 
-    make CFLAGS=-DPLAN_REUSE
+    make CFLAGS="-DPLAN_REUSE"
 
 On Windows this will require GNU/Make to be installed, which for [Chocolatey](https://chocolatey.org/) users is available via:
 
@@ -17,14 +17,16 @@ On Windows this will require GNU/Make to be installed, which for [Chocolatey](ht
 
 To run (on Linux):
 
-    ./program
+    ./program 8
 
 To run (on Windows):
 
-    .\program.exe
+    .\program.exe 8
+
+where the argument specifies the length of the FFT to be performed in powers of 10.
 
 ## Example Output
-    $ .\program.exe
+    $ .\program.exe 8
     Starting benchmark
     Benchmark took 0.01993 ms as measured from CPU.
     Benchmark took 0.0213312 ms as measured from GPU.
@@ -32,4 +34,4 @@ To run (on Windows):
 ## Code Structure
 * The program entry point and benchmark setup is in ```kernel.cu```
 * The FFT wrapper is in ```gmfft.cpp```
-* CUDA ports of various portions of FFT pre/post-processing are in ```fft_kernels.cu```
+* CUDA ports of various portions of FFT pre/post-processing are in ```fft_kernels.cu
