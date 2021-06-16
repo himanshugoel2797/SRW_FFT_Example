@@ -26,10 +26,11 @@ To run (on Windows):
 where the argument specifies the length of the FFT to be performed in powers of 10.
 
 ## Example Output
-    $ .\program.exe 8
+    $ ./program.exe 7
     Starting benchmark
-    Benchmark took 0.01993 ms as measured from CPU.
-    Benchmark took 0.0213312 ms as measured from GPU.
+    Benchmark took 5.63443 ms as measured from CPU.
+    Benchmark took 5.64782 ms as measured from GPU.
+
 
 ## Code Structure
 * The program entry point and benchmark setup is in ```kernel.cu```
