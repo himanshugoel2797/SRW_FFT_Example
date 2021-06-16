@@ -76,9 +76,11 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 		DataToFFT = (fftwf_complex*)(FFT1DInfo.pInData);
 		OutDataFFT = (fftwf_complex*)(FFT1DInfo.pOutData);
 
-		cudaMallocManaged((void**)&DataToFFT_cufft, Nx * sizeof(cufftComplex));
-		cudaMallocManaged((void**)&OutDataFFT_cufft, Nx * sizeof(cufftComplex));
-		cudaMemcpy(DataToFFT_cufft, DataToFFT, Nx * sizeof(cufftComplex), cudaMemcpyHostToDevice);
+		DataToFFT_cufft = (cufftComplex*)DataToFFT;
+		OutDataFFT_cufft = (cufftComplex*)OutDataFFT;
+		//cudaMallocManaged((void**)&DataToFFT_cufft, Nx * sizeof(cufftComplex));
+		//cudaMallocManaged((void**)&OutDataFFT_cufft, Nx * sizeof(cufftComplex));
+		//cudaMemcpy(DataToFFT_cufft, DataToFFT, Nx * sizeof(cufftComplex), cudaMemcpyHostToDevice);
 
 		//DataToFFT_cufft = (cufftComplex*)DataToFFT;
 		//OutDataFFT_cufft = (cufftComplex*)OutDataFFT;
@@ -90,9 +92,12 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 		dDataToFFT = (fftw_complex*)(FFT1DInfo.pdInData);
 		dOutDataFFT = (fftw_complex*)(FFT1DInfo.pdOutData);
 
-		cudaMallocManaged((void**)&dDataToFFT_cufft, Nx * sizeof(cufftDoubleComplex));
-		cudaMallocManaged((void**)&dOutDataFFT_cufft, Nx * sizeof(cufftDoubleComplex));
-		cudaMemcpy(dDataToFFT_cufft, dDataToFFT, Nx * sizeof(cufftDoubleComplex), cudaMemcpyHostToDevice);
+		dDataToFFT_cufft = (cufftDoubleComplex*)dDataToFFT;
+		dOutDataFFT_cufft = (cufftDoubleComplex*)dOutDataFFT;
+
+		//cudaMallocManaged((void**)&dDataToFFT_cufft, Nx * sizeof(cufftDoubleComplex));
+		//cudaMallocManaged((void**)&dOutDataFFT_cufft, Nx * sizeof(cufftDoubleComplex));
+		//cudaMemcpy(dDataToFFT_cufft, dDataToFFT, Nx * sizeof(cufftDoubleComplex), cudaMemcpyHostToDevice);
 
 		//dDataToFFT_cufft = (cufftDoubleComplex*)dDataToFFT;
 		//dOutDataFFT_cufft = (cufftDoubleComplex*)dOutDataFFT;
@@ -312,8 +317,9 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 			//RepairSignAfter1DFFT(dOutDataFFT, FFT1DInfo.HowMany);
 			//RotateDataAfter1DFFT(dOutDataFFT, FFT1DInfo.HowMany);
 			//cudaMemcpy(dOutDataFFT_cufft, dOutDataFFT, sizeof(double) * Nx * 2, cudaMemcpyDeviceToHost);
-			RepairSignAfter1DFFT_CUDA((double*)dOutDataFFT_cufft, FFT1DInfo.HowMany, Nx);
-			RotateDataAfter1DFFT_CUDA((double*)dOutDataFFT_cufft, FFT1DInfo.HowMany, Nx);
+			RepairAndRotateDataAfter1DFFT_CUDA((double*)dOutDataFFT_cufft, FFT1DInfo.HowMany, Nx);
+			//RepairSignAfter1DFFT_CUDA((double*)dOutDataFFT_cufft, FFT1DInfo.HowMany, Nx);
+			//RotateDataAfter1DFFT_CUDA((double*)dOutDataFFT_cufft, FFT1DInfo.HowMany, Nx);
 		}
 #else
 		if (OutDataFFT != 0)
@@ -541,18 +547,18 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 #ifdef _FFTW3 //OC29012019
 #ifdef _CUFFT
 	if (DataToFFT != 0) {
-		cudaMemcpy(OutDataFFT, OutDataFFT_cufft, Nx * sizeof(cufftComplex), cudaMemcpyDeviceToHost);
+		//cudaMemcpy(OutDataFFT, OutDataFFT_cufft, Nx * sizeof(cufftComplex), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		cudaFree(DataToFFT_cufft);
-		cudaFree(OutDataFFT_cufft);
+		//cudaFree(DataToFFT_cufft);
+		//cudaFree(OutDataFFT_cufft);
 		cufftDestroy(Plan1DFFT);
 		//fftwf_destroy_plan(Plan1DFFT);
 	}
 	else if (dDataToFFT != 0) {
-		cudaMemcpy(dOutDataFFT, dOutDataFFT_cufft, Nx * sizeof(cufftDoubleComplex), cudaMemcpyDeviceToHost);
+		//cudaMemcpy(dOutDataFFT, dOutDataFFT_cufft, Nx * sizeof(cufftDoubleComplex), cudaMemcpyDeviceToHost);
 		cudaDeviceSynchronize();
-		cudaFree(dDataToFFT_cufft);
-		cudaFree(dOutDataFFT_cufft);
+		//cudaFree(dDataToFFT_cufft);
+		//cudaFree(dOutDataFFT_cufft);
 		cufftDestroy(dPlan1DFFT);
 		//fftw_destroy_plan(dPlan1DFFT);
 	}

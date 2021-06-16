@@ -170,6 +170,15 @@ void RotateDataAfter1DFFT_CUDA(double* pAfterFFT, long HowMany, long Nx) {
     RotateDataAfter1DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, HowMany, Nx * 2, Nx);
 }
 
+void RepairAndRotateDataAfter1DFFT_CUDA(double* pAfterFFT, long HowMany, long Nx) {
+    const int bs = 256;
+    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 blocks(bs, 1);
+    RepairAndRotateAfter1DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, HowMany, Nx * 2, Nx);
+
+    //template <class T> __global__ void RepairAndRotateAfter1DFFT_Kernel(T * pAfterFFT, long HowMany, long Nx2, long Nx)
+}
+
 void NormalizeDataAfter1DFFT_CUDA(double* pAfterFFT, long HowMany, long Nx, double Mult) {
     const int bs = 256;
     dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
