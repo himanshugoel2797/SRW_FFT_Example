@@ -92,7 +92,11 @@ int main() {
   double mesh[3] = {xStart, xStep, xNp};
   float *input_data;
   float *input_data_cpy;
-  int runs = 10;
+  int runs = 50;
+
+  cudaEvent_t start, stop;
+  cudaEventCreate(&start);
+  cudaEventCreate(&stop);
 
   cudaMallocManaged(&input_data, 2 * xNp * sizeof(float));
   cudaMallocManaged(&input_data_cpy, 2 * xNp * sizeof(float));
@@ -105,6 +109,7 @@ int main() {
   }
 
   double net_time = 0;
+  double net_time_gpu = 0;
 
   cudaMemcpy(input_data_cpy, input_data, 2 * xNp * sizeof(float),
              cudaMemcpyDefault);
@@ -116,20 +121,33 @@ int main() {
   for (int i = 0; i < runs; i++) {
     cudaMemcpy(input_data, input_data_cpy, 2 * xNp * sizeof(float),
                cudaMemcpyDefault);
-    std::chrono::high_resolution_clock::time_point t0 =
-        std::chrono::high_resolution_clock::now();
+    
+    cudaEventRecord(start);
+
+    std::chrono::high_resolution_clock::time_point t0 = std::chrono::high_resolution_clock::now();
+
     srwlUtiFFT(reinterpret_cast<char *>(input_data), 'f', mesh, 3, 1);
-    std::chrono::high_resolution_clock::time_point t1 =
-        std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> ts =
-        std::chrono::duration_cast<std::chrono::duration<double>>(t1 - t0);
+    
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> ts = std::chrono::duration_cast<std::chrono::duration<double>>(t1 - t0);
+
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
+
+    //Measure gpu time
+    float ms = 0;
+    cudaEventElapsedTime(&ms, start, stop);
+    net_time_gpu += ms;
+
     net_time += ts.count();
   }
 
+  net_time_gpu /= runs;
   net_time /= runs;
   net_time *= 1000;
 
-  std::cout << "Benchmark took " << net_time << " ms." << std::endl;
+  std::cout << "Benchmark took " << net_time << " ms as measured from CPU." << std::endl;
+  std::cout << "Benchmark took " << net_time_gpu << " ms as measured from GPU." << std::endl;
 
   // cudaDeviceReset must be called before exiting in order for profiling and
   // tracing tools such as Nsight and Visual Profiler to show complete traces.

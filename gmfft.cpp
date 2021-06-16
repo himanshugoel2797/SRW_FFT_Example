@@ -1,6 +1,13 @@
 #include "defns.h"
 #include "gmfft.h"
 
+#ifdef PLAN_REUSE
+static bool PlanInited = false;
+static bool dPlanInited = false;
+static cufftHandle Plan1DFFT;
+static cufftHandle dPlan1DFFT;
+#endif
+
 int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 {// Assumes Nx, Ny even !
 	//Added by S.Yakubov (for profiling?) at parallelizing SRW via OpenMP:
@@ -61,11 +68,15 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 	//#define _CUFFT
 #ifdef _FFTW3 //OC28012019
 #ifdef _CUFFT
+#ifndef PLAN_REUSE
 	cufftHandle Plan1DFFT;
+#endif
 	fftwf_complex* DataToFFT = 0, * OutDataFFT = 0; //, *pOutDataFFT=0;
 	cufftComplex* DataToFFT_cufft = 0, * OutDataFFT_cufft = 0;
 
+#ifndef PLAN_REUSE
 	cufftHandle dPlan1DFFT;
+#endif
 	fftw_complex* dDataToFFT = 0, * dOutDataFFT = 0; //, *pdOutDataFFT=0;
 	cufftDoubleComplex* dDataToFFT_cufft = 0, * dOutDataFFT_cufft = 0;
 
@@ -175,13 +186,27 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 		int arN[] = { (int)Nx }; //OC14052020
 		if (DataToFFT != 0)
 		{
+#ifdef PLAN_REUSE
+			if (!PlanInited){
+				PlanInited = true;
+#endif
 			cufftPlanMany(&Plan1DFFT, 1, arN, NULL, 1, Nx, NULL, 1, Nx, CUFFT_C2C, 1);
+#ifdef PLAN_REUSE
+			}
+#endif
 			if (Plan1DFFT == 0) return ERROR_IN_FFT;
 			cufftExecC2C(Plan1DFFT, DataToFFT_cufft, OutDataFFT_cufft, CUFFT_FORWARD);
 		}
 		else if (dDataToFFT != 0) //OC02022019
 		{
+#ifdef PLAN_REUSE
+			if (!dPlanInited){
+				dPlanInited = true;
+#endif
 			cufftPlanMany(&dPlan1DFFT, 1, arN, NULL, 1, Nx, NULL, 1, Nx, CUFFT_Z2Z, 1);
+#ifdef PLAN_REUSE
+			}
+#endif
 			if (dPlan1DFFT == 0) return ERROR_IN_FFT;
 			cufftExecZ2Z(dPlan1DFFT, dDataToFFT_cufft, dOutDataFFT_cufft, CUFFT_FORWARD);
 		}
@@ -284,7 +309,14 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 		//int arN[] = {Nx};
 		if (DataToFFT != 0)
 		{
+#ifdef PLAN_REUSE
+			if (!PlanInited){
+				PlanInited = true;
+#endif
 			cufftPlanMany(&Plan1DFFT, 1, arN, NULL, 1, Nx, NULL, 1, Nx, CUFFT_C2C, 1);
+#ifdef PLAN_REUSE
+			}
+#endif
 			if (Plan1DFFT == 0) return ERROR_IN_FFT;
 
 			RotateDataAfter1DFFT_CUDA((float*)DataToFFT_cufft, FFT1DInfo.HowMany, Nx);
@@ -293,7 +325,14 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 		}
 		else if (dDataToFFT != 0) //OC02022019
 		{
+#ifdef PLAN_REUSE
+			if (!dPlanInited){
+				dPlanInited = true;
+#endif
 			cufftPlanMany(&dPlan1DFFT, 1, arN, NULL, 1, Nx, NULL, 1, Nx, CUFFT_Z2Z, 1);
+#ifdef PLAN_REUSE
+			}
+#endif
 			if (dPlan1DFFT == 0) return ERROR_IN_FFT;
 
 			RotateDataAfter1DFFT_CUDA((double*)dDataToFFT_cufft, FFT1DInfo.HowMany, Nx);
@@ -406,12 +445,16 @@ int CGenMathFFT1D::Make1DFFT(CGenMathFFT1DInfo& FFT1DInfo)
 #ifdef _FFTW3 //OC29012019
 #ifdef _CUFFT
 	if (DataToFFT != 0) {
-		cudaDeviceSynchronize();
+		//cudaDeviceSynchronize();
+#ifndef PLAN_REUSE
 		cufftDestroy(Plan1DFFT);
+#endif
 	}
 	else if (dDataToFFT != 0) {
-		cudaDeviceSynchronize();
+		//cudaDeviceSynchronize();
+#ifndef PLAN_REUSE
 		cufftDestroy(dPlan1DFFT);
+#endif
 	}
 #else
 	if (DataToFFT != 0) fftwf_destroy_plan(Plan1DFFT);

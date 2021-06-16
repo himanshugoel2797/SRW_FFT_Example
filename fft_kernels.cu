@@ -114,86 +114,86 @@ template <class T> __global__ void TreatShift_Kernel(T* pData, long Nx2, T* tShi
 
 void RepairSignAfter1DFFT_CUDA(float* pAfterFFT, long HowMany, long Nx) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    RepairSignAfter1DFFT_Kernel<float> << <threads, blocks >> > (pAfterFFT, Nx * 2);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    RepairSignAfter1DFFT_Kernel<float> << <blocks, threads >> > (pAfterFFT, Nx * 2);
 }
 
 void RotateDataAfter1DFFT_CUDA(float* pAfterFFT, long HowMany, long Nx) {
     const int bs = 256;
-    dim3 threads(Nx / (2 * bs) + ((Nx / 2 & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    RotateDataAfter1DFFT_Kernel<float> << <threads, blocks >> > (pAfterFFT, HowMany, Nx * 2, Nx);
+    dim3 blocks(Nx / (2 * bs) + ((Nx / 2 & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    RotateDataAfter1DFFT_Kernel<float> << <blocks, threads >> > (pAfterFFT, HowMany, Nx * 2, Nx);
 }
 
 void RepairAndRotateDataAfter1DFFT_CUDA(float* pAfterFFT, long HowMany, long Nx) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    RepairAndRotateAfter1DFFT_Kernel<float> << <threads, blocks >> > (pAfterFFT, HowMany, Nx * 2, Nx);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    RepairAndRotateAfter1DFFT_Kernel<float> << <blocks, threads >> > (pAfterFFT, HowMany, Nx * 2, Nx);
 }
 
 void NormalizeDataAfter1DFFT_CUDA(float* pAfterFFT, long HowMany, long Nx, double Mult) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    NormalizeDataAfter1DFFT_Kernel<float> << <threads, blocks >> > (pAfterFFT, HowMany, Nx * 2, Mult);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    NormalizeDataAfter1DFFT_Kernel<float> << <blocks, threads >> > (pAfterFFT, HowMany, Nx * 2, Mult);
 }
 
 void FillArrayShift_CUDA(double t0, double tStep, long Nx, float* tShiftX) {
     const int bs = 256;
-    dim3 threads(Nx / (2 * bs) + ((Nx / 2 & (bs - 1)) != 0), 1);
-    dim3 blocks(bs, 1);
-    FillArrayShift_Kernel<float> << <threads, blocks >> > (t0, tStep, Nx, tShiftX);
+    dim3 blocks(Nx / (2 * bs) + ((Nx / 2 & (bs - 1)) != 0), 1);
+    dim3 threads(bs, 1);
+    FillArrayShift_Kernel<float> << <blocks, threads >> > (t0, tStep, Nx, tShiftX);
 }
 
 void TreatShift_CUDA(float* pData, long HowMany, long Nx, float* tShiftX) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    TreatShift_Kernel<float> << <threads, blocks >> > (pData, Nx * 2, tShiftX);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    TreatShift_Kernel<float> << <blocks, threads >> > (pData, Nx * 2, tShiftX);
 }
 
 void RepairSignAfter1DFFT_CUDA(double* pAfterFFT, long HowMany, long Nx) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    RepairSignAfter1DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, Nx * 2);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    RepairSignAfter1DFFT_Kernel<double> << <blocks, threads >> > (pAfterFFT, Nx * 2);
 }
 
 void RotateDataAfter1DFFT_CUDA(double* pAfterFFT, long HowMany, long Nx) {
     const int bs = 256;
-    dim3 threads(Nx / (2 * bs) + ((Nx & (2 * bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    RotateDataAfter1DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, HowMany, Nx * 2, Nx);
+    dim3 blocks(Nx / (2 * bs) + ((Nx & (2 * bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    RotateDataAfter1DFFT_Kernel<double> << <blocks, threads >> > (pAfterFFT, HowMany, Nx * 2, Nx);
 }
 
 void RepairAndRotateDataAfter1DFFT_CUDA(double* pAfterFFT, long HowMany, long Nx) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    RepairAndRotateAfter1DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, HowMany, Nx * 2, Nx);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    RepairAndRotateAfter1DFFT_Kernel<double> << <blocks, threads >> > (pAfterFFT, HowMany, Nx * 2, Nx);
 }
 
 void NormalizeDataAfter1DFFT_CUDA(double* pAfterFFT, long HowMany, long Nx, double Mult) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    NormalizeDataAfter1DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, HowMany, Nx * 2, Mult);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    NormalizeDataAfter1DFFT_Kernel<double> << <blocks, threads >> > (pAfterFFT, HowMany, Nx * 2, Mult);
 }
 
 void FillArrayShift_CUDA(double t0, double tStep, long Nx, double* tShiftX) {
     const int bs = 256;
-    dim3 threads(Nx / (2 * bs) + ((Nx & (2 * bs - 1)) != 0), 1);
-    dim3 blocks(bs, 1);
-    FillArrayShift_Kernel<double> << <threads, blocks >> > (t0, tStep, Nx, tShiftX);
+    dim3 blocks(Nx / (2 * bs) + ((Nx & (2 * bs - 1)) != 0), 1);
+    dim3 threads(bs, 1);
+    FillArrayShift_Kernel<double> << <blocks, threads >> > (t0, tStep, Nx, tShiftX);
 }
 
 void TreatShift_CUDA(double* pData, long HowMany, long Nx, double* tShiftX) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
-    dim3 blocks(bs, 1);
-    TreatShift_Kernel<double> << <threads, blocks >> > (pData, Nx * 2, tShiftX);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), HowMany);
+    dim3 threads(bs, 1);
+    TreatShift_Kernel<double> << <blocks, threads >> > (pData, Nx * 2, tShiftX);
 }
 
 
@@ -253,42 +253,42 @@ template <class T> __global__ void NormalizeDataAfter2DFFT_Kernel(T* pAfterFFT, 
 
 void RepairSignAfter2DFFT_CUDA(float* pAfterFFT, long Nx, long Ny) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), Ny);
-    dim3 blocks(bs, 1);
-    RepairSignAfter2DFFT_Kernel<float> << <threads, blocks >> > (pAfterFFT, Nx, Ny);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), Ny);
+    dim3 threads(bs, 1);
+    RepairSignAfter2DFFT_Kernel<float> << <blocks, threads >> > (pAfterFFT, Nx, Ny);
 }
 
 void RotateDataAfter2DFFT_CUDA(float* pAfterFFT, long Nx, long Ny) {
     const int bs = 256;
-    dim3 threads(Nx / (2 * bs) + ((Nx / 2 & (bs - 1)) != 0), Ny);
-    dim3 blocks(bs, 1);
-    RotateDataAfter2DFFT_Kernel<float> << <threads, blocks >> > (pAfterFFT, Nx / 2, Nx, Ny / 2, Ny);
+    dim3 blocks(Nx / (2 * bs) + ((Nx / 2 & (bs - 1)) != 0), Ny);
+    dim3 threads(bs, 1);
+    RotateDataAfter2DFFT_Kernel<float> << <blocks, threads >> > (pAfterFFT, Nx / 2, Nx, Ny / 2, Ny);
 }
 
 void NormalizeDataAfter2DFFT_CUDA(float* pAfterFFT, long Nx, long Ny, double Mult) {
     const int bs = 256;
-    dim3 threads((Nx * Ny) / bs + (((Nx * Ny) & (bs - 1)) != 0), 1);
-    dim3 blocks(bs, 1);
-    NormalizeDataAfter2DFFT_Kernel<float> << <threads, blocks >> > (pAfterFFT, Nx * Ny * 2, Mult);
+    dim3 blocks((Nx * Ny) / bs + (((Nx * Ny) & (bs - 1)) != 0), 1);
+    dim3 threads(bs, 1);
+    NormalizeDataAfter2DFFT_Kernel<float> << <blocks, threads >> > (pAfterFFT, Nx * Ny * 2, Mult);
 }
 
 void RepairSignAfter2DFFT_CUDA(double* pAfterFFT, long Nx, long Ny) {
     const int bs = 256;
-    dim3 threads(Nx / bs + ((Nx & (bs - 1)) != 0), Ny);
-    dim3 blocks(bs, 1);
-    RepairSignAfter2DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, Nx, Ny);
+    dim3 blocks(Nx / bs + ((Nx & (bs - 1)) != 0), Ny);
+    dim3 threads(bs, 1);
+    RepairSignAfter2DFFT_Kernel<double> << <blocks, threads >> > (pAfterFFT, Nx, Ny);
 }
 
 void RotateDataAfter2DFFT_CUDA(double* pAfterFFT, long Nx, long Ny) {
     const int bs = 256;
-    dim3 threads(Nx / (2 * bs) + ((Nx / 2 & (bs - 1)) != 0), Ny);
-    dim3 blocks(bs, 1);
-    RotateDataAfter2DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, Nx / 2, Nx, Ny / 2, Ny);
+    dim3 blocks(Nx / (2 * bs) + ((Nx / 2 & (bs - 1)) != 0), Ny);
+    dim3 threads(bs, 1);
+    RotateDataAfter2DFFT_Kernel<double> << <blocks, threads >> > (pAfterFFT, Nx / 2, Nx, Ny / 2, Ny);
 }
 
 void NormalizeDataAfter2DFFT_CUDA(double* pAfterFFT, long Nx, long Ny, double Mult) {
     const int bs = 256;
-    dim3 threads((Nx * Ny) / bs + (((Nx * Ny) & (bs - 1)) != 0), 1);
-    dim3 blocks(bs, 1);
-    NormalizeDataAfter2DFFT_Kernel<double> << <threads, blocks >> > (pAfterFFT, Nx * Ny * 2, Mult);
+    dim3 blocks((Nx * Ny) / bs + (((Nx * Ny) & (bs - 1)) != 0), 1);
+    dim3 threads(bs, 1);
+    NormalizeDataAfter2DFFT_Kernel<double> << <blocks, threads >> > (pAfterFFT, Nx * Ny * 2, Mult);
 }
